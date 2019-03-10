@@ -1,0 +1,9 @@
+*.swp
+*.o
+*.bin
+*.list
+*.hex
+*.img
+ucos/*.c
+ucos/*.h
+*.elf

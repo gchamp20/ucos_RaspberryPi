@@ -3,9 +3,9 @@ ARMGNU ?= arm-none-eabi
 
 INCLUDEPATH ?= "./h"
 
-COPS = -Wall -O2 -nostdlib -nostartfiles -ffreestanding -mcpu=arm1176jzf-s -I $(INCLUDEPATH)
+COPS = -Wall -O2 -nostdlib -nostartfiles -ffreestanding  -march=armv7-a -mtune=cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4 -I $(INCLUDEPATH)
 
-gcc : kernel.img
+gcc : kernel7.img
 
 OBJS = build/startup.o 
 
@@ -21,8 +21,8 @@ OBJS += build/ucos_ii.o
 OBJS += build/main.o
 OBJS += build/userApp.o
 
-OBJS += lib/libc.a
-OBJS += lib/libgcc.a 
+LIBGCC = $(abspath $(shell $(ARMGNU)-gcc -march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard -print-libgcc-file-name))
+LIBC = $(abspath $(shell $(ARMGNU)-gcc -march=armv7-a -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -print-file-name=libc.a))
 
 clean :
 	rm -f build/*.o
@@ -51,9 +51,9 @@ build/%.o : usrApp/%.c
 build/ucos_ii.o : ucos/ucos_ii.c
 	$(ARMGNU)-gcc $(COPS) ucos/ucos_ii.c -c -o build/ucos_ii.o
 
-kernel.img : raspberrypi.ld $(OBJS)
-	$(ARMGNU)-ld $(OBJS) -T raspberrypi.ld -o ucos_bcm2835.elf 
+kernel7.img : raspberrypi.ld $(OBJS)
+	$(ARMGNU)-ld $(OBJS) $(LIBC) $(LIBGCC) -T raspberrypi.ld -o ucos_bcm2835.elf 
 	$(ARMGNU)-objdump -D ucos_bcm2835.elf > ucos_bcm2835.list
 	$(ARMGNU)-objcopy ucos_bcm2835.elf -O ihex ucos_bcm2835.hex
 	$(ARMGNU)-objcopy ucos_bcm2835.elf -O binary ucos_bcm2835.bin
-	$(ARMGNU)-objcopy ucos_bcm2835.elf -O binary kernel.img
+	$(ARMGNU)-objcopy ucos_bcm2835.elf -O binary kernel7.img

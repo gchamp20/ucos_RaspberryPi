@@ -89,11 +89,10 @@ typedef INT32U   		OS_CPU_SR;
 */
 
 #if OS_CRITICAL_METHOD == 3                           /* Allocate storage for CPU status register      */
-OS_CPU_SR  OSCPUSaveSR(void);
-void OSCPURestoreSR(OS_CPU_SR cpu_sr);
+OS_CPU_SR  OS_CPU_SR_Save(void);
+void OS_CPU_SR_Restore(OS_CPU_SR cpu_sr);
 void OSCPUEnableIrq(void);
 int OSCPUGetSR(void);
-
 
 #endif
 

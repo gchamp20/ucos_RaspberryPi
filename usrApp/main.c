@@ -1,6 +1,7 @@
 #include "uart.h"
 #include "regs.h"
 #include "timer.h"
+#include "interrupts.h"
 #include "ucos/includes.h"
 
 OS_STK  userAppTaskStk1[1000];
