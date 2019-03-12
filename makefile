@@ -3,15 +3,18 @@ ARMGNU ?= arm-none-eabi
 
 INCLUDEPATH ?= "./h"
 
-COPS = -Wall -O2 -nostdlib -nostartfiles -ffreestanding  -march=armv7-a -mtune=cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4 -I $(INCLUDEPATH)
+COPS = -Wall -g -O0 -nostdlib -nostartfiles -ffreestanding  -march=armv7-a -mtune=cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4 -I $(INCLUDEPATH) -I "./bsp" -D RPI2
+AOPS = -Wall -g -O0 -nostdlib -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -D RPI2
 
 gcc : kernel7.img
 
-OBJS = build/startup.o 
+OBJS = build/startup.o
 
-OBJS += build/uart.o
-OBJS += build/timer.o
-OBJS += build/interrupts.o
+OBJS += build/rpi_aux.o
+OBJS += build/rpi_gpio.o
+OBJS += build/rpi_i2c.o
+OBJS += build/rpi_irq.o
+OBJS += build/rpi_systimer.o
 
 OBJS += build/OS_Cpu_a.o
 OBJS += build/OS_Cpu_c.o
@@ -37,7 +40,7 @@ build/%.o : port/%.s
 	$(ARMGNU)-gcc $(COPS) -D__ASSEMBLY__ -c -o $@ $<
 	
 build/%.o : init/%.s
-	$(ARMGNU)-gcc $(COPS) -D__ASSEMBLY__ -c -o $@ $<
+	$(ARMGNU)-gcc $(AOPS) -D__ASSEMBLY__ -c -o $@ $<
 	
 build/%.o : port/%.c
 	$(ARMGNU)-gcc $(COPS)  -c -o $@ $<

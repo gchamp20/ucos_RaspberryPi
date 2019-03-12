@@ -1,14 +1,15 @@
 
 #define	_ASMLANGUAGE
 	.extern OSRunning                    //External references
-    .extern OSPrioCur
-    .extern OSPrioHighRdy
-    .extern OSTCBCur
-    .extern OSTCBHighRdy
-    .extern OSIntNesting
-    .extern OSIntExit
-    .extern OSTaskSwHook
+	.extern OSPrioCur
+	.extern OSPrioHighRdy
+	.extern OSTCBCur
+	.extern OSTCBHighRdy
+	.extern OSIntNesting
+	.extern OSIntExit
+	.extern OSTaskSwHook
 	.extern OS_CPU_IRQ_ISR_Handler
+	.extern vApplicationIRQHandler
 
 	.globl	OSDisableInt
 	.globl	OSEnableInt
@@ -227,7 +228,7 @@ OS_CPU_IRQ_ISR:
 OS_CPU_IRQ_ISR_1:
         MSR     CPSR_c, #0xD2    			   // Change to IRQ mode (to use the IRQ stack to handle interrupt)
 
-        BL      OS_CPU_IRQ_ISR_Handler         // OS_CPU_IRQ_ISR_Handler();
+        BL      vApplicationIRQHandler // OS_CPU_IRQ_ISR_Handler();
 
         MSR     CPSR_c, #0xDF 				  // Change to SYS mode
 
