@@ -32,6 +32,16 @@ irq_handler:        .word OS_CPU_IRQ_ISR//irqHandler to be modified
 fiq_handler:        .word fiq
 
 reset:
+	mrc     p15, 0, r1, c0, c0, 5
+	and     r1, r1, #3
+	cmp r1, #0
+	beq zero
+	// cpu id > 0, stop
+not_zero:
+	wfe
+	b       not_zero
+zero:// cpu id == 0
+
 	;@	In the reset handler, we need to copy our interrupt vector table to 0x0000, its currently at 0x8000
 
 	mov r0,#0x8000								;@ Store the source pointer
