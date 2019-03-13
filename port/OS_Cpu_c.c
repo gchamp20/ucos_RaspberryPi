@@ -128,5 +128,3 @@ void  OSTCBInitHook (OS_TCB *ptcb)
     ptcb = ptcb;                                           /* Prevent Compiler warning                 */
 }
 #endif
-
-

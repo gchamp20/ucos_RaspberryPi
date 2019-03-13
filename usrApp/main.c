@@ -1,8 +1,8 @@
-#include "uart.h"
-#include "regs.h"
-#include "timer.h"
-#include "interrupts.h"
 #include "ucos/includes.h"
+
+#include "rpi_timer.h"
+#include "rpi_gpio.h"
+#include "rpi_aux.h"
 
 OS_STK  userAppTaskStk1[1000];
 OS_STK  userAppTaskStk2[1000];
@@ -12,13 +12,18 @@ extern void userApp2(void *);
 
 void main()
 {
-	uart_init();
+	rpi_cpu_irq_disable();
+	rpi_aux_mu_init();
+
+	rpi_aux_mu_string("HELLO WORLD");
+
+	/*uart_init();
 
 	InitInterruptController();
 
 	DisableInterrupts();
 
-	timer_init();
+	timer_init(); */
 
 	OSInit();
 

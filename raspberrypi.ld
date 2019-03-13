@@ -6,9 +6,9 @@
  **/
 MEMORY
 {
-	RESERVED	(r)		: ORIGIN = 0x00000000, LENGTH = 32K
+	RESERVED	(r)	: ORIGIN = 0x00000000, LENGTH = 32K
 	INIT_RAM	(rwx)	: ORIGIN = 0x00008000, LENGTH = 32K
-	RAM			(rwx)	: ORIGIN = 0x00010000, LENGTH = 128M
+	RAM		(rwx)	: ORIGIN = 0x00010000, LENGTH = 128M
 }
 
 ENTRY(_start)
@@ -49,19 +49,27 @@ SECTIONS {
 	.data : {
 		*(.data)
 	} > RAM
-	
 
 	.bss :
 	{
-		__bss_start = .;	
+		__bss_start = .;
 		*(.bss)
 		*(.bss.*)
+		__bss_end = .;
 	} > RAM
-	__bss_end = .;	
+
+/*    
+    __exidx_start = .;
+    .ARM.exidx :
+    {
+        *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+    } > RAM
+    __exidx_end = .;
+*/
 	/**
 	 *	Place HEAP here???
 	 **/
-
+	PROVIDE(__HEAP_START = __bss_end );
 	/**
 	 *	Stack starts at the top of the RAM, and moves down!
 	 **/
