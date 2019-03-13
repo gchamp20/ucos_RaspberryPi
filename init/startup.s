@@ -32,7 +32,59 @@ irq_handler:        .word OS_CPU_IRQ_ISR//irqHandler to be modified
 fiq_handler:        .word fiq
 
 reset:
+	mrc     p15, 0, r1, c0, c0, 5
+	and     r1, r1, #3
+	cmp r1, #0
+	beq zero
+	// cpu id > 0, stop
+not_zero:
+	wfe
+	b       not_zero
+zero:// cpu id == 0
+
+	/* Disable IRQ & FIQ */
+	cpsid if
+
+	mov r0, #0x1
+	mcr p15, 0, r0, c9, c14, 0 /* allow PMU from user space */
+
+	// PMCR.E (bit 0) = 1
+	mcr p15, 0, r0, c9, c12, 0
+
+	// PMCNTENSET.C (bit 31) = 1
+	mov r0, #0x80000000
+	mcr p15, 0, r0, c9, c12, 1
+
+	/* Check for HYP mode */
+	mrs r0, cpsr_all
+	and r0, r0, #0x1F
+	mov r8, #0x1A
+	cmp r0, r8
+	beq overHyped
+	b continueBoot
+
+overHyped: /* Get out of HYP mode */
+	ldr r1, =continueBoot
+	msr ELR_hyp, r1
+	mrs r1, cpsr_all
+	and r1, r1, #0x1f	;@ CPSR_MODE_MASK
+	orr r1, r1, #0x13	;@ CPSR_MODE_SUPERVISOR
+	msr SPSR_hyp, r1
+	eret
+
+continueBoot:
 	;@	In the reset handler, we need to copy our interrupt vector table to 0x0000, its currently at 0x8000
+
+	// R0 = System Control Register
+	mrc p15,0,r0,c1,c0,0
+
+	// Enable caches and branch prediction
+	orr r0, #0x800
+	orr r0, #0x4
+	orr r0, #0x1000
+
+	// System Control Register = R0
+	mcr p15,0,r0,c1,c0,0
 
 	mov r0,#0x8000								;@ Store the source pointer
     mov r1,#0x0000								;@ Store the destination pointer.

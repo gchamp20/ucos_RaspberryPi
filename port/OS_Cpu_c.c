@@ -119,7 +119,6 @@ void  OSInitHookEnd (void)
 #if OS_CPU_HOOKS_EN > 0 && OS_VERSION >= 251
 void  OSTaskIdleHook (void)
 {
-
 }
 #endif
 
