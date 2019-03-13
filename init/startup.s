@@ -91,7 +91,7 @@ continueBoot:
     ;@ (PSR_SYS_MODE|PSR_FIQ_DIS|PSR_IRQ_DIS)
 	mov r0,#0xDF
 	msr cpsr_c,r0
-	mov sp,#0x8000000
+	mov sp,#0x4000
 
 	ldr r0, =__bss_start
 	ldr r1, =__bss_end
